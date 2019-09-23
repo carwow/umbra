@@ -1,0 +1,55 @@
+ruby: &ruby
+  image: carwow/ruby-ci:2.6
+
+version: 2
+
+jobs:
+  bundle:
+    working_directory: ~/umbra
+    docker:
+      - *ruby
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bundle-{{ checksum "Gemfile.lock" }}
+            - bundle-
+      - run: |
+          bundle config --local path vendor/bundle &&
+          bundle check || bundle install --jobs=4 --retry=3
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile.lock" }}
+          paths: [~/umbra/vendor/bundle]
+      - persist_to_workspace:
+          root: '~'
+          paths: [umbra]
+
+  rubocop:
+    working_directory: ~/umbra
+    docker:
+      - *ruby
+    steps:
+      - attach_workspace:
+          at: '~'
+      - run: bundle exec rubocop
+
+  tests:
+    working_directory: ~/umbra
+    docker:
+      - *ruby
+    steps:
+      - attach_workspace:
+          at: '~'
+      - run: |
+          bundle exec rspec
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - bundle
+      - rubocop:
+          requires: [bundle]
+      - tests:
+          requires: [bundle]
+

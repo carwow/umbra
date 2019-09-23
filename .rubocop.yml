@@ -1,0 +1,3 @@
+inherit_gem:
+  carwow_rubocop:
+    - default.yml
