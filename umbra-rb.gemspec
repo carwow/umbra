@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'umbra/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'umbra'
+  spec.name          = 'umbra-rb'
   spec.version       = Umbra::VERSION
   spec.authors       = ['carwow Developers']
   spec.email         = ['developers@carwow.co.uk']
@@ -27,11 +27,12 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'carwow_rubocop'
+  spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
 
-  spec.add_dependency 'typhoeus', '~> 1.3'
-  spec.add_dependency 'redis', '~> 4.1'
   spec.add_dependency 'multi_json', '~> 1.13'
   spec.add_dependency 'oj', '~> 3.9'
+  spec.add_dependency 'redis', '~> 4.1'
+  spec.add_dependency 'typhoeus', '~> 1.3'
 end
