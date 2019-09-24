@@ -26,6 +26,8 @@ module Umbra
 
               x.call
             end
+          rescue StandardError => e
+            Umbra.config.error_handler.call(e)
           end
 
           at_exit do

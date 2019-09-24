@@ -34,6 +34,8 @@ module Umbra
 
               request.run
             end
+          rescue StandardError => e
+            Umbra.config.error_handler.call(e)
           end
         end
 
