@@ -4,3 +4,6 @@ inherit_gem:
 
 Metrics/MethodLength:
   Max: 20
+
+Metrics/AbcSize:
+  Max: 20
