@@ -1,15 +1,18 @@
 module Umbra
   class ShadowRequester
-    def initialize(count: 1, pool: 1)
+    def initialize(count: 1, pool: 1, max_queue_size: 100)
       @count = count
       @pool = pool
       @queue = Queue.new
       @stop = Object.new
       @lock = Mutex.new
+      @max_queue_size = max_queue_size
     end
 
     def call(env)
       start_worker!
+
+      return if @queue.size > @max_queue_size
 
       request = RequestBuilder.call(env)
 

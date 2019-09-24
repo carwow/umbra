@@ -1,8 +1,12 @@
 module Umbra
   class Publisher < SynchronousPublisher
+    MAX_QUEUE_SIZE = 100
+
     class << self
       def call(env, response)
         start_once!
+
+        return if @queue.size > MAX_QUEUE_SIZE
 
         @queue.push(proc { super(env, response) })
       end
