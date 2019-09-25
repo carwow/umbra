@@ -24,6 +24,7 @@ module Umbra
 
     private
 
+    # rubocop:disable Metrics/MethodLength
     def start_worker!
       @lock.synchronize do
         return if @started
@@ -54,5 +55,6 @@ module Umbra
         end
       end
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

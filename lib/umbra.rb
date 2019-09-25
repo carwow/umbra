@@ -36,7 +36,7 @@ module Umbra
       return unless @config
       return unless @config.request_selector.call(env, response)
 
-      env.merge!('umbra.request_body' => request_body(env))
+      env['umbra.request_body'] = request_body(env)
 
       @config.publisher.call(env, response)
     rescue StandardError => e

@@ -16,6 +16,7 @@ module Umbra
 
       private
 
+      # rubocop:disable Metrics/MethodLength
       def start_once!
         LOCK.synchronize do
           return if @started == Process.pid
@@ -44,6 +45,7 @@ module Umbra
           end
         end
       end
+      # rubocop:enable Metrics/MethodLength
     end
 
     STOP = Object.new
