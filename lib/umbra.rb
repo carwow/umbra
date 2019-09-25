@@ -76,7 +76,7 @@ module Umbra
       redis.ping
       logger.info '[umbra] redis is alive!'
     rescue Redis::BaseError => e
-      logger.warn "[umbra] redis while connecting to redis: #{e.message}"
+      logger.warn "[umbra] error while connecting to redis: #{e.message}"
       reset!
     rescue StandardError => e
       logger.warn "[umbra] redis is misconfigured: #{e.message}"
