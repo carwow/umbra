@@ -1,9 +1,13 @@
 # umbra :waning_crescent_moon:
-### A shadow requesting tool for rack-based apps
+
+> **umbra** /ˈʌmbrə/
+>
+> noun
+> 1. the fully shaded inner region of a shadow cast by an opaque object, especially the area on the earth or moon experiencing the total phase of an eclipse.
+> 2. shadow or darkness.
+>   "an impenetrable umbra seemed to fill every inch of the museum"
 
 `umbra` is a rack middleware that allows you to create shadow requests via a redis pub/sub channel.
-
-This can help you to build confidence in your infrasture by simulating elevated traffic in a controlled manner. Thereby allowing you to observe and monitor the limits of your systems.
 
 # Installation
 
