@@ -12,12 +12,14 @@ RSpec.describe Umbra do
   end
 
   describe '.publish' do
-    let(:env) { {} }
+    let(:request_body) { instance_double(IO, rewind: nil, read: 'body') }
+    let(:env) { { 'rack.input' => request_body } }
     let(:response) { nil }
     let(:config) { described_class.config }
     let(:publisher) { config.publisher }
     let(:request_selector) { config.request_selector }
     let(:error_handler) { config.error_handler }
+    let(:expected_env) { { 'rack.input' => request_body, 'umbra.request_body' => 'body' } }
 
     before do
       allow(publisher).to receive(:call)
@@ -27,7 +29,7 @@ RSpec.describe Umbra do
     it 'calls the configured publisher' do
       described_class.publish(env, response)
 
-      expect(publisher).to have_received(:call).with(env, response)
+      expect(publisher).to have_received(:call).with(expected_env, response)
     end
 
     it 'calls the configured request_selector' do
