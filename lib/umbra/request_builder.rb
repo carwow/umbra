@@ -2,6 +2,11 @@
 
 module Umbra
   class RequestBuilder
+    UMBRA_HEADERS = {
+      Umbra::HEADER_KEY => Umbra::HEADER_VALUE,
+      'HTTP_CACHE_CONTROL' => 'no-cache, no-store, private, max-age=0'
+    }.freeze
+
     class << self
       def call(env)
         Typhoeus::Request.new(
@@ -17,7 +22,7 @@ module Umbra
       def headers(env)
         request(env)
         .fetch('headers')
-        .merge(Umbra::HEADER_KEY => Umbra::HEADER_VALUE)
+        .merge(UMBRA_HEADERS)
         .transform_keys { |key| key.split('_').drop(1).map(&:capitalize).join('-') }
       end
 

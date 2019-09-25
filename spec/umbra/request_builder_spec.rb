@@ -33,6 +33,7 @@ RSpec.describe Umbra::RequestBuilder do
       headers: include(
         'User-Agent' => 'user',
         'Host' => 'example.com',
+        'Cache-Control' => 'no-cache, no-store, private, max-age=0',
         'X-Umbra-Request' => 'true'
       )
     }
