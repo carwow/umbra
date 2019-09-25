@@ -1,6 +1,9 @@
 ruby: &ruby
   image: carwow/ruby-ci:2.6
 
+redis: &redis
+  image: redis
+
 version: 2
 
 jobs:
@@ -37,6 +40,7 @@ jobs:
     working_directory: ~/umbra
     docker:
       - *ruby
+      - *redis
     steps:
       - attach_workspace:
           at: '~'
