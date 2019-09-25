@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    umbra-rb (0.1.2.pre)
+    umbra-rb (0.1.3.pre)
       multi_json (~> 1.13)
       oj (~> 3.9)
       redis (~> 4.1)
