@@ -29,8 +29,6 @@ module Umbra
       @config = Config.default(&block)
 
       test_redis_connection!
-
-      logger.info '[umbra] Configured'
     end
 
     def publish(env, response)
