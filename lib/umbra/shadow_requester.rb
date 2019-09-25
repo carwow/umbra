@@ -32,7 +32,7 @@ module Umbra
         @started = true
         Umbra.logger.info '[umbra] Starting shadowing threads...'
 
-        workers = (1..@pool).map do |thread_num|
+        workers = (0...@pool).map do |thread_num|
           Thread.new do
             Umbra.logger.info "[umbra] shadow thread #{thread_num} waiting"
 
