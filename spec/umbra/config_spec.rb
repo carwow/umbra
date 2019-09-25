@@ -16,6 +16,7 @@ RSpec.describe Umbra::Config do
           config.request_selector = 'request_selector'
           config.error_handler = 'error_handler'
           config.redis_options = 'redis_options'
+          config.logger = 'logger'
         end
       end
 
@@ -23,6 +24,7 @@ RSpec.describe Umbra::Config do
       it { expect(config.request_selector).to eq('request_selector') }
       it { expect(config.error_handler).to eq('error_handler') }
       it { expect(config.redis_options).to eq('redis_options') }
+      it { expect(config.logger).to eq('logger') }
     end
   end
 end
