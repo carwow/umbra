@@ -12,7 +12,10 @@ module Umbra
     def call(env)
       start_worker!
 
-      return if @queue.size > @max_queue_size
+      if @queue.size > @max_queue_size
+        Umbra.logger.warn '[umbra] Shadowing queue at max - dropping items'
+        return
+      end
 
       request = RequestBuilder.call(env)
 
@@ -26,15 +29,19 @@ module Umbra
         return if @started
 
         @started = true
+        Umbra.logger.info '[umbra] Starting shadowing threads...'
 
-        workers = (1..@pool).map do |_|
+        workers = (1..@pool).map do |thread_num|
           Thread.new do
+            Umbra.logger.info "[umbra] shadow thread #{thread_num} waiting"
+
             while (request = @queue.pop)
               break if request == @stop
 
               begin
                 request.run
               rescue StandardError => e
+                Umbra.logger.warn "[umbra] error in shadow thread #{thread_num}"
                 Umbra.config.error_handler.call(e)
               end
             end

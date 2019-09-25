@@ -27,6 +27,8 @@ module Umbra
 
     def configure(&block)
       @config = Config.default(&block)
+
+      logger.info '[umbra] Configured'
     end
 
     def publish(env, response)
@@ -47,6 +49,10 @@ module Umbra
 
     def encoder
       @config.encoder
+    end
+
+    def logger
+      @config.logger
     end
 
     def reset!

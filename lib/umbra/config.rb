@@ -1,6 +1,6 @@
 module Umbra
   class Config
-    attr_accessor :publisher, :request_selector, :encoder, :error_handler, :redis_options
+    attr_accessor :publisher, :request_selector, :encoder, :error_handler, :redis_options, :logger
 
     def self.default(&block)
       new(
@@ -9,6 +9,7 @@ module Umbra
         encoder: Encoder,
         error_handler: SuppressErrorHandler,
         redis_options: {},
+        logger: Logger.new(STDOUT),
         &block
       )
     end
@@ -21,6 +22,7 @@ module Umbra
       @encoder = opts.fetch(:encoder)
       @error_handler = opts.fetch(:error_handler)
       @redis_options = opts.fetch(:redis_options)
+      @logger = opts.fetch(:logger)
 
       yield(self) if block_given?
     end

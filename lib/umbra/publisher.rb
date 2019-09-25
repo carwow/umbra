@@ -6,7 +6,10 @@ module Umbra
       def call(env, response)
         start_once!
 
-        return if @queue.size > MAX_QUEUE_SIZE
+        if @queue.size > MAX_QUEUE_SIZE
+          Umbra.logger.warn '[umbra] Publish queue at max - dropping items'
+          return
+        end
 
         @queue.push(proc { super(env, response) })
       end
@@ -16,6 +19,8 @@ module Umbra
       def start_once!
         LOCK.synchronize do
           return if @started == Process.pid
+
+          Umbra.logger.info '[umbra] Starting publishing thread'
 
           @started = Process.pid
           @queue = Queue.new
@@ -27,6 +32,7 @@ module Umbra
               begin
                 x.call
               rescue StandardError => e
+                Umbra.logger.warn '[umbra] Error in publishing thread'
                 Umbra.config.error_handler.call(e)
               end
             end
