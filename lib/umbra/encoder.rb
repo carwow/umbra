@@ -40,13 +40,7 @@ module Umbra
     end
 
     def request_body
-      io = @env.fetch('rack.input')
-
-      io.rewind
-      body = io.read
-      io.rewind
-
-      body
+      @env.fetch('umbra.request_body')
     end
 
     def body_string

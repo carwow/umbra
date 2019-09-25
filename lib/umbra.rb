@@ -34,6 +34,8 @@ module Umbra
       return unless @config
       return unless @config.request_selector.call(env, response)
 
+      env.merge!('umbra.request_body' => request_body(env))
+
       @config.publisher.call(env, response)
     rescue StandardError => e
       @config.error_handler.call(e, env, response)
@@ -53,6 +55,15 @@ module Umbra
     end
 
     private
+
+    def request_body(env)
+      io = env.fetch('rack.input')
+      io.rewind
+      body = io.read
+      io.rewind
+
+      body
+    end
 
     def umbra_request?(env)
       env[HEADER_KEY] == HEADER_VALUE
