@@ -24,10 +24,12 @@ module Umbra
             while (x = @queue.pop)
               break if x == STOP
 
-              x.call
+              begin
+                x.call
+              rescue StandardError => e
+                Umbra.config.error_handler.call(e)
+              end
             end
-          rescue StandardError => e
-            Umbra.config.error_handler.call(e)
           end
 
           at_exit do
