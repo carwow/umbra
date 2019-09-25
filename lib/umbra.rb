@@ -76,12 +76,12 @@ module Umbra
     def test_redis_connection!
       logger.info '[umbra] Testing redis connection...'
       redis.ping
-      logger.info '[umbra] redis is alive'
-    rescue ArgumentError
-      logger.warn '[umbra] redis_url is misconfigured...'
-      reset!
+      logger.info '[umbra] redis is alive!'
     rescue Redis::BaseError => e
-      logger.warn "[umbra] redis error: #{e.message}"
+      logger.warn "[umbra] redis while connecting to redis: #{e.message}"
+      reset!
+    rescue StandardError => e
+      logger.warn "[umbra] redis is misconfigured: #{e.message}"
       reset!
     end
 
