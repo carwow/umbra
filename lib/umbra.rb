@@ -28,6 +28,8 @@ module Umbra
     def configure(&block)
       @config = Config.default(&block)
 
+      test_redis_connection!
+
       logger.info '[umbra] Configured'
     end
 
@@ -69,6 +71,18 @@ module Umbra
       io.rewind
 
       body
+    end
+
+    def test_redis_connection!
+      logger.info '[umbra] Testing redis connection...'
+      redis.ping
+      logger.info '[umbra] redis is alive'
+    rescue ArgumentError
+      logger.warn '[umbra] redis_url is misconfigured...'
+      reset!
+    rescue Redis::BaseError => e
+      logger.warn "[umbra] redis error: #{e.message}"
+      reset!
     end
 
     def umbra_request?(env)
