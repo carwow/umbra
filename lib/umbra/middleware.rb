@@ -7,7 +7,7 @@ module Umbra
     def call(env)
       response = @app.call(env)
 
-      Umbra.publish(env, response)
+      Umbra.publish(env.dup, response.dup)
 
       response
     end
