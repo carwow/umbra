@@ -74,6 +74,23 @@ The `payload` is the encoded request and response, as defined by the configured 
 
 # Config
 
+`umbra` allows you to add custom configuration by passing a block to `Umbra.configure`. You may pass custom configuration in the following form:
+
+```ruby
+Umbra.configure do |config|
+  config.<config_option> = <config_value>
+end
+```
+
+| config_option | default | description |
+| ------------- | ------- | ----------- |
+| publisher | `Umbra::Publisher` | Must respond to `call`. By default, pushes the encoded rack request/response to a `Queue` that is consumed in a different thread and publishes to `redis`. |
+| request_selector | `Umbra::RequestSelector` / `proc { true }` | Must respond to `call`. Determines whether request/response will be published |
+| encoder | `Umbra::Encoder` | Must response to `call`. Encodes the rack request/response for publishing |
+| error_handler | `Umbra::SupressErrorHandler` / `proc { nil }` | Must respond to `call`. Called on exception, is always passed the exception as first argument, *may* be passed rack environment and response. |
+| redis_options | `{}` | Hash of options passed to `Redis` client. See [`Redis::Client` docs](https://www.rubydoc.info/gems/redis/Redis/Client) |
+| logger | `Logger.new(STDOUT)` | The logger to be used. |
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/carwow/umbra.
