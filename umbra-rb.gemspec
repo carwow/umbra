@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
 
+  spec.add_dependency 'concurrent-ruby', '~> 1.1'
   spec.add_dependency 'multi_json', '~> 1.13'
   spec.add_dependency 'oj', '~> 3.9'
   spec.add_dependency 'redis', '~> 4.1'

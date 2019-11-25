@@ -3,58 +3,30 @@ module Umbra
     def initialize(count: 1, pool: 1, max_queue_size: 100)
       @count = count
       @pool = pool
-      @queue = Queue.new
-      @stop = Object.new
-      @lock = Mutex.new
       @max_queue_size = max_queue_size
     end
 
     def call(env)
-      start_worker!
-
-      if @queue.size > @max_queue_size
-        Umbra.logger.warn '[umbra] Shadowing queue at max - dropping items'
-        return
+      @count.times do
+        queue << proc { RequestBuilder.call(env).run }
       end
 
-      request = RequestBuilder.call(env)
+      true
+    rescue Concurrent::RejectedExecutionError
+      Umbra.logger.warn '[umbra] Shadowing queue at max - dropping items'
 
-      @count.times { @queue.push(request) }
+      false
     end
 
     private
 
-    # rubocop:disable Metrics/MethodLength
-    def start_worker!
-      @lock.synchronize do
-        return if @started
-
-        @started = true
-        Umbra.logger.info '[umbra] Starting shadowing threads...'
-
-        workers = (0...@pool).map do |thread_num|
-          Thread.new do
-            Umbra.logger.info "[umbra] shadow thread #{thread_num} waiting"
-
-            while (request = @queue.pop)
-              break if request == @stop
-
-              begin
-                request.run
-              rescue StandardError => e
-                Umbra.logger.warn "[umbra] error in shadow thread #{thread_num}"
-                Umbra.config.error_handler.call(e)
-              end
-            end
-          end
-        end
-
-        at_exit do
-          @pool.times { @queue.push(@stop) }
-          workers.map(&:join)
-        end
-      end
+    def queue
+      @queue ||= Concurrent::CachedThreadPool.new(
+        min_threads: 1,
+        max_threads: @pool,
+        max_queue: @max_queue_size,
+        fallback_policy: :abort
+      )
     end
-    # rubocop:enable Metrics/MethodLength
   end
 end

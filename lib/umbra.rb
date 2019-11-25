@@ -3,6 +3,7 @@
 require 'typhoeus'
 require 'redis'
 require 'multi_json'
+require 'concurrent'
 
 module Umbra
   autoload :Config, 'umbra/config'

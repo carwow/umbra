@@ -4,52 +4,30 @@ module Umbra
 
     class << self
       def call(env, response)
-        start_once!
+        pool << proc { super.call(env, response) }
 
-        if @queue.size > MAX_QUEUE_SIZE
-          Umbra.logger.warn '[umbra] Publish queue at max - dropping items'
-          return
-        end
+        true
+      rescue Concurrent::RejectedExecutionError
+        Umbra.logger.warn '[umbra] Queue at max - dropping items'
 
-        @queue.push(proc { super(env, response) })
+        false
       end
 
       private
 
-      # rubocop:disable Metrics/MethodLength
-      def start_once!
+      def pool
         LOCK.synchronize do
-          return if @started == Process.pid
-
-          Umbra.logger.info '[umbra] Starting publishing thread'
-
-          @started = Process.pid
-          @queue = Queue.new
-
-          worker_thread = Thread.new do
-            while (x = @queue.pop)
-              break if x == STOP
-
-              begin
-                x.call
-              rescue StandardError => e
-                Umbra.logger.warn '[umbra] Error in publishing thread'
-                Umbra.config.error_handler.call(e)
-              end
-            end
-          end
-
-          at_exit do
-            @queue.push(STOP)
-            worker_thread.join
-          end
+          @pool ||= Concurrent::CachedThreadPool.new(
+            min_threads: 1,
+            max_threads: 1,
+            max_queue: MAX_QUEUE_SIZE,
+            fallback_policy: :abort
+          )
         end
       end
-      # rubocop:enable Metrics/MethodLength
     end
 
-    STOP = Object.new
     LOCK = Mutex.new
-    private_constant :STOP, :LOCK
+    private_constant :LOCK
   end
 end
