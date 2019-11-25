@@ -21,9 +21,9 @@ module Umbra
 
       def headers(env)
         request(env)
-        .fetch('headers')
-        .merge(UMBRA_HEADERS)
-        .transform_keys { |key| key.split('_').drop(1).map(&:capitalize).join('-') }
+          .fetch('headers')
+          .merge(UMBRA_HEADERS)
+          .transform_keys { |key| key.split('_').drop(1).map(&:capitalize).join('-') }
       end
 
       def method(env)
