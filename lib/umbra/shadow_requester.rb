@@ -1,15 +1,19 @@
 module Umbra
   class ShadowRequester
+    attr_reader :queue, :count
+
     def initialize(count: 1, pool: 1, max_queue_size: 100)
       @count = count
-      @pool = pool
-      @max_queue_size = max_queue_size
+      @queue ||= Concurrent::CachedThreadPool.new(
+        min_threads: 1,
+        max_threads: pool,
+        max_queue: max_queue_size,
+        fallback_policy: :abort
+      )
     end
 
     def call(env)
-      @count.times do
-        queue << proc { RequestBuilder.call(env).run }
-      end
+      queue << proc { call!(env) }
 
       true
     rescue Concurrent::RejectedExecutionError
@@ -18,15 +22,13 @@ module Umbra
       false
     end
 
-    private
+    def call!(env)
+      hydra = Typhoeus::Hydra.new
+      request = RequestBuilder.call(env)
 
-    def queue
-      @queue ||= Concurrent::CachedThreadPool.new(
-        min_threads: 1,
-        max_threads: @pool,
-        max_queue: @max_queue_size,
-        fallback_policy: :abort
-      )
+      @count.times { hydra.queue(request) }
+
+      hydra.run
     end
   end
 end
