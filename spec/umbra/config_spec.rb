@@ -4,7 +4,7 @@ RSpec.describe Umbra::Config do
   describe '.default' do
     let(:config) { described_class.default }
 
-    it { expect(config.publisher).to eq(Umbra::Publisher) }
+    it { expect(config.publisher).to be_a(Umbra::Publisher) }
     it { expect(config.request_selector).to eq(Umbra::RequestSelector) }
     it { expect(config.error_handler).to eq(Umbra::SuppressErrorHandler) }
     it { expect(config.redis_options).to eq({}) }
