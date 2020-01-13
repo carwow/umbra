@@ -4,7 +4,7 @@ module Umbra
 
     def self.default(&block)
       new(
-        publisher: Publisher,
+        publisher: Publisher.new,
         request_selector: RequestSelector,
         encoder: Encoder,
         error_handler: SuppressErrorHandler,

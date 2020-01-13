@@ -1,33 +1,30 @@
 module Umbra
-  class Publisher < SynchronousPublisher
-    MAX_QUEUE_SIZE = 100
+  class Publisher
+    DEFAULT_MAX_QUEUE = 100
+    DEFAULT_MIN_THREADS = 1
+    DEFAULT_MAX_THREADS = 1
 
-    class << self
-      def call(env, response)
-        pool << proc { super.call(env, response) }
-
-        true
-      rescue Concurrent::RejectedExecutionError
-        Umbra.logger.warn '[umbra] Queue at max - dropping items'
-
-        false
-      end
-
-      private
-
-      def pool
-        LOCK.synchronize do
-          @pool ||= Concurrent::CachedThreadPool.new(
-            min_threads: 1,
-            max_threads: 1,
-            max_queue: MAX_QUEUE_SIZE,
-            fallback_policy: :abort
-          )
-        end
-      end
+    def initialize(**options)
+      @pool = Concurrent::CachedThreadPool.new(
+        min_threads: options.fetch(:min_threads, DEFAULT_MIN_THREADS),
+        max_threads: options.fetch(:max_thread, DEFAULT_MAX_THREADS),
+        max_queue: options.fetch(:max_queue, DEFAULT_MAX_QUEUE),
+        fallback_policy: :abort
+      )
     end
 
-    LOCK = Mutex.new
-    private_constant :LOCK
+    def call(env, response, encoder: Umbra.encoder, redis: Umbra.redis)
+      @pool << proc { call!(env, response, encoder: encoder, redis: redis) }
+
+      true
+    rescue Concurrent::RejectedExecutionError
+      Umbra.logger.warn '[umbra] Queue at max - dropping items'
+
+      false
+    end
+
+    def call!(env, response, encoder: Umbra.encoder, redis: Umbra.redis)
+      redis.publish(Umbra::CHANNEL, encoder.call(env, response))
+    end
   end
 end
