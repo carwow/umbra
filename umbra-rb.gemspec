@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rack'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'webmock', '~> 2'
+  spec.add_development_dependency 'webmock', '~> 3'
 
   spec.add_dependency 'concurrent-ruby', '~> 1.1'
   spec.add_dependency 'multi_json', '~> 1.13'
