@@ -30,7 +30,7 @@ GEM
     jaro_winkler (1.5.4)
     method_source (1.0.0)
     multi_json (1.14.1)
-    oj (3.10.5)
+    oj (3.10.6)
     parallel (1.19.1)
     parser (2.7.0.4)
       ast (~> 2.4.0)
