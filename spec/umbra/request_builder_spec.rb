@@ -3,25 +3,25 @@
 RSpec.describe Umbra::RequestBuilder do
   subject(:request) { described_class.call(env) }
 
-  let(:query) { 'query_key_1=query_value1&query_key_2=query_value2' }
-  let(:script_name) { '/script_name' }
-  let(:path_info) { '/endpoint' }
-  let(:headers) { { 'HTTP_USER_AGENT' => 'user', 'HTTP_HOST' => 'example.com' } }
-  let(:host) { 'example.com' }
-  let(:scheme) { 'https' }
-  let(:method) { 'GET' }
-  let(:body) { '' }
+  let(:query) { "query_key_1=query_value1&query_key_2=query_value2" }
+  let(:script_name) { "/script_name" }
+  let(:path_info) { "/endpoint" }
+  let(:headers) { {"HTTP_USER_AGENT" => "user", "HTTP_HOST" => "example.com"} }
+  let(:host) { "example.com" }
+  let(:scheme) { "https" }
+  let(:method) { "GET" }
+  let(:body) { "" }
   let(:env) do
     {
-      'request' => {
-        'host' => host,
-        'headers' => headers,
-        'method' => method,
-        'query' => query,
-        'script_name' => script_name,
-        'path_info' => path_info,
-        'scheme' => scheme,
-        'body' => body
+      "request" => {
+        "host" => host,
+        "headers" => headers,
+        "method" => method,
+        "query" => query,
+        "script_name" => script_name,
+        "path_info" => path_info,
+        "scheme" => scheme,
+        "body" => body
       }
     }
   end
@@ -29,12 +29,12 @@ RSpec.describe Umbra::RequestBuilder do
   let(:expected_options) do
     {
       method: :get,
-      body: '',
+      body: "",
       headers: include(
-        'User-Agent' => 'user',
-        'Host' => 'example.com',
-        'Cache-Control' => 'no-cache, no-store, private, max-age=0',
-        'X-Umbra-Request' => 'true'
+        "User-Agent" => "user",
+        "Host" => "example.com",
+        "Cache-Control" => "no-cache, no-store, private, max-age=0",
+        "X-Umbra-Request" => "true"
       )
     }
   end

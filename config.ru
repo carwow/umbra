@@ -1,6 +1,6 @@
-require 'rack'
-require 'rack/lobster'
-require 'umbra'
+require "rack"
+require "rack/lobster"
+require "umbra"
 
 Umbra.configure
 

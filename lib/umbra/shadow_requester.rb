@@ -17,7 +17,7 @@ module Umbra
 
       true
     rescue Concurrent::RejectedExecutionError
-      Umbra.logger.warn '[umbra] Shadowing queue at max - dropping items'
+      Umbra.logger.warn "[umbra] Shadowing queue at max - dropping items"
 
       false
     end
