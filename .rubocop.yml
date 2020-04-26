@@ -1,9 +1,0 @@
-inherit_gem:
-  carwow_rubocop:
-    - default.yml
-
-Metrics/MethodLength:
-  Max: 20
-
-Metrics/AbcSize:
-  Max: 20

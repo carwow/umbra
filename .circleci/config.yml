@@ -27,14 +27,14 @@ jobs:
           root: '~'
           paths: [umbra]
 
-  rubocop:
+  standard:
     working_directory: ~/umbra
     docker:
       - *ruby
     steps:
       - attach_workspace:
           at: '~'
-      - run: bundle exec rubocop
+      - run: bundle exec standard
 
   tests:
     working_directory: ~/umbra
@@ -52,7 +52,7 @@ workflows:
   build:
     jobs:
       - bundle
-      - rubocop:
+      - standard:
           requires: [bundle]
       - tests:
           requires: [bundle]
