@@ -34,7 +34,7 @@ jobs:
     steps:
       - attach_workspace:
           at: '~'
-      - run: bundle exec standard
+      - run: bundle exec rake standard
 
   tests:
     working_directory: ~/umbra
