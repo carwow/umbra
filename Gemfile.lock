@@ -64,7 +64,7 @@ GEM
       rubocop (>= 0.71.0)
     ruby-progressbar (1.10.1)
     safe_yaml (1.0.5)
-    standard (0.4.0)
+    standard (0.4.1)
       rubocop (~> 0.82.0)
       rubocop-performance (~> 1.5.2)
     typhoeus (1.4.0)
