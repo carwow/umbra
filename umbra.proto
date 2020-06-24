@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package umbra.pb;
+
+option go_package = "github.com/carwow/umbra/pb";
+
+message Message {
+  string method = 1;
+  string url = 2;
+  map<string, string> headers = 3;
+  bytes body = 4;
+}

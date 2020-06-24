@@ -28,6 +28,14 @@ Or install it yourself as:
 
 ## Usage
 
+`umbra` is composed of two separate parts: a rack middleware and a shadower executable.
+
+The rack middleware publishes a protobuf encoded version of an incoming request
+to a redis channel, the shadower subscribes to this channel and replicates the
+request a configurable amount of times.
+
+### Middleware
+
 A minimal rack application using `umbra` would look like this:
 
 ```ruby
@@ -54,25 +62,7 @@ Umbra.configure
 Rails.application.config.middleware.use(Umbra::Middleware)
 ```
 
-Then, in another process, you can start receiving each request via an `Umbra::Subscriber`.
-`Umbra::Subscriber` can be initialized with anything response to `.call`. For example:
-
-```ruby
-Umbra::Subscriber.new(
-  proc { |payload| puts "New Request: #{payload}" }
-).start
-```
-
-The `payload` is the encoded request and response, as defined by the configured encoder. By default, this is `Umbra::Encoder`.
-
-`umbra` also provides some helper classes for common use cases:
-
-- `Umbra::RequestBuilder` takes the default encoding and returns a `Typhoeus::Request` object.
-- `Umbra::ShadowRequester` can be configured to shadow requests `count:` times using a `pool:` of threads via a thread queue.
-- More to come...
-
-
-# Config
+#### Config
 
 `umbra` allows you to add custom configuration by passing a block to `Umbra.configure`. You may pass custom configuration in the following form:
 
@@ -90,6 +80,25 @@ end
 | error_handler | `Umbra::SupressErrorHandler` / `proc { nil }` | Must respond to `call`. Called on exception, is always passed the exception as first argument, *may* be passed rack environment and response. |
 | redis_options | `{}` | Hash of options passed to `Redis` client. See [`Redis::Client` docs](https://www.rubydoc.info/gems/redis/Redis/Client) |
 | logger | `Logger.new(STDOUT)` | The logger to be used. |
+
+## Shadower
+
+You can build the executable or download the latest version from the latest releases page.
+
+To build from source you can run `go build .`
+
+The following flags are available:
+
+    -buffer int
+    	  request buffer size (default 25)
+    -redis string
+        redis connection string (default "redis://localhost:6379")
+    -replication float
+        number of times to replicate requests (default 1)
+    -timeout duration
+        http client timeout duration (default 5s)
+    -workers int
+        number of concurrent workers (default 100)
 
 ## Contributing
 
