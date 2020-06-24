@@ -4,6 +4,8 @@ module Umbra
     DEFAULT_MIN_THREADS = 1
     DEFAULT_MAX_THREADS = 1
 
+    attr_reader :pool
+
     def initialize(**options)
       @pool = Concurrent::CachedThreadPool.new(
         min_threads: options.fetch(:min_threads, DEFAULT_MIN_THREADS),
@@ -13,8 +15,8 @@ module Umbra
       )
     end
 
-    def call(env, response, encoder: Umbra.encoder, redis: Umbra.redis)
-      @pool << proc { call!(env, response, encoder: encoder, redis: redis) }
+    def call(env, encoder: Umbra.encoder, redis: Umbra.redis)
+      @pool << proc { call!(env, encoder: encoder, redis: redis) }
 
       true
     rescue Concurrent::RejectedExecutionError
@@ -23,8 +25,8 @@ module Umbra
       false
     end
 
-    def call!(env, response, encoder: Umbra.encoder, redis: Umbra.redis)
-      redis.publish(Umbra::CHANNEL, encoder.call(env, response))
+    def call!(env, encoder: Umbra.encoder, redis: Umbra.redis)
+      redis.publish(Umbra::CHANNEL, encoder.call(env))
     end
   end
 end
