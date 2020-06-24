@@ -2,61 +2,47 @@
 
 module Umbra
   class Encoder
-    def self.call(env, response)
-      new(env, response).call
+    def self.call(env)
+      new(env).call
     end
 
-    def initialize(env, response)
+    def initialize(env)
       @env = env
-      @status, @headers, @body = response
-    end
-
-    def to_h
-      @to_h ||=
-        {
-          "request" => {
-            "scheme" => @env.fetch("rack.url_scheme"),
-            "host" => @env["HTTP_HOST"] || @env.fetch("SERVER_NAME"),
-            "uri" => @env.fetch("REQUEST_URI"),
-            "port" => @env.fetch("SERVER_PORT"),
-            "method" => @env.fetch("REQUEST_METHOD"),
-            "query" => @env.fetch("QUERY_STRING"),
-            "script_name" => @env.fetch("SCRIPT_NAME"),
-            "path_info" => @env.fetch("PATH_INFO"),
-            "headers" => request_headers,
-            "body" => request_body
-          },
-          "response" => {
-            "status" => @status,
-            "headers" => @headers,
-            "body" => body_string
-          }
-        }
     end
 
     def call
-      @call ||= MultiJson.dump(to_h)
+      @call ||= Pb::Message.new(
+        method: rack_request.request_method,
+        url: rack_request.url,
+        body: request_body,
+        headers: request_headers
+      ).to_proto
+    end
+
+    def ignored_headers
+      []
     end
 
     private
 
+    def rack_request
+      @rack_request ||= Rack::Request.new(@env)
+    end
+
     def request_headers
-      @request_headers ||= @env.select { |k, _| k.start_with?("HTTP_") }
+      @request_headers ||=
+        @env
+          .select { |k, _| k.start_with?("HTTP_") && !ignored_headers.include?(k) }
+          .merge(HEADER_KEY => HEADER_VALUE)
+          .transform_keys { |k| to_http_header(k) }
+    end
+
+    def to_http_header(rack_header)
+      rack_header.delete_prefix("HTTP_").downcase.split("_").join("-")
     end
 
     def request_body
       @env.fetch("umbra.request_body")
-    end
-
-    def body_string
-      @body_string ||=
-        begin
-          str = []
-
-          @body.each { |x| str << x.to_s }
-
-          str.join("")
-        end
     end
   end
 end
