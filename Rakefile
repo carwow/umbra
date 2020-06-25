@@ -15,7 +15,11 @@ namespace :pb do
   end
 end
 
-task :buildall do
+task :gobuild do
+    `go build -o exe/umbra .`
+end
+
+task :gobuildall do
   oses = %w[linux darwin]
   platforms = %w[amd64]
 

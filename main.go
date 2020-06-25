@@ -136,9 +136,9 @@ func main() {
 		}
 	}()
 
-	waitForInterrupt(pubsub, p, client, &wg)
-
 	log.Println("ready!")
+
+	waitForInterrupt(pubsub, p, client, &wg)
 
 	os.Exit(0)
 }
