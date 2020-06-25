@@ -16,7 +16,7 @@ namespace :pb do
 end
 
 task :gobuild do
-    `go build -o exe/umbra .`
+  `go build -o exe/umbra .`
 end
 
 task :gobuildall do
