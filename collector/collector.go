@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// The Collector is informed of any new requests coming in and of replication
+// attempt, it stores these values and exposes stats of a shadowing run.
 type Collector interface {
 	Add(*Result) error
 	Inc()
@@ -49,7 +51,7 @@ func New(buffer int) *Config {
 	}
 }
 
-// Consume receives from the results chan and store them for later reporting
+// Start begins consuming from the channel of results populated by Add
 func (c *Config) Start() Collector {
 	go func() {
 		c.wg.Add(1)
@@ -75,6 +77,7 @@ func (c *Config) Start() Collector {
 	return c
 }
 
+// Add adds a new result to the processing channel, errors if the channel is full
 func (c *Config) Add(res *Result) error {
 	select {
 	case c.channel <- res:
@@ -84,6 +87,7 @@ func (c *Config) Add(res *Result) error {
 	}
 }
 
+// Stop closes and drains the channel of results
 func (c *Config) Stop() {
 	close(c.channel)
 	c.wg.Wait()
@@ -94,7 +98,7 @@ func (c *Config) Inc() {
 	c.stats.ProcessedTotal++
 }
 
-// Report returns the current aggregate results of this shadowing run
+// Stats returns the current aggregate results of this shadowing run
 func (c *Config) Stats() Stats {
 	return *c.stats
 }

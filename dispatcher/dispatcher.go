@@ -15,6 +15,8 @@ import (
 	"sync"
 )
 
+// The Dispatcher basically ETLs from a datasource (e.g. a redis channel) to
+// a processor (i.e. a pool.Pool) a configurable number of times
 type Dispatcher interface {
 	Start() Dispatcher
 	Stop()
@@ -94,7 +96,7 @@ func (c *Config) Stop() {
 	c.client.Close()
 }
 
-// Consume receives from the configured redis channel, converts the message into
+// Start receives from the configured redis channel, converts the message into
 // a http.Request and pushes it to the pool for replication the configured number
 // of times
 func (c *Config) Start() Dispatcher {
