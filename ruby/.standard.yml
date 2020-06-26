@@ -1,0 +1,2 @@
+ignore:
+  - 'lib/umbra/pb/**/*'

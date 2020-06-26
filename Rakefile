@@ -1,24 +1,18 @@
 # frozen_string_literal: true
 
-require "bundler/gem_tasks"
-require "rspec/core/rake_task"
-require "standard/rake"
-
-RSpec::Core::RakeTask.new(:spec)
-
-task default: :spec
-
 namespace :pb do
   desc "Generate protobuf files for ruby and go"
   task :generate do
-    `protoc -I=. --ruby_out=lib/umbra/pb --go_out=pb --go_opt=paths=source_relative ./umbra.proto`
+    `protoc -I=. --ruby_out=ruby/lib/umbra/pb --go_out=pb --go_opt=paths=source_relative ./umbra.proto`
   end
 end
 
+desc "build the umbra shadower binary for the local arch"
 task :gobuild do
   `go build -o exe/umbra .`
 end
 
+desc "build the umbra shadower binary for a matrix of arches"
 task :gobuildall do
   oses = %w[linux darwin]
   platforms = %w[amd64]

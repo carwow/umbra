@@ -2,6 +2,7 @@
 
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
 require "umbra/version"
 
 Gem::Specification.new do |spec|
@@ -17,15 +18,14 @@ Gem::Specification.new do |spec|
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
+
+  spec.require_paths = ["lib"]
+
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`
       .split("\x0")
       .reject { |f| f.match(%r{^(test|spec|features)/}) }
-      .reject { |f| f.match(/.*\.go$/) }
-      .reject { |f| f.match(/.*\.proto$/) }
-      .reject { |f| f.match(/^go.*/) }
   end
-  spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "standard"
