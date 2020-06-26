@@ -90,7 +90,7 @@ To build from source you can run `go build .`
 The following flags are available:
 
     -buffer int
-    	  request buffer size (default 25)
+        request buffer size (default 25)
     -redis string
         redis connection string (default "redis://localhost:6379")
     -replication float
