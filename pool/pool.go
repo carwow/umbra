@@ -1,8 +1,11 @@
 package pool
 
 import (
+	"github.com/carwow/umbra/collector"
+
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -10,35 +13,25 @@ import (
 
 // Pool describes a worker pool interface
 type Pool interface {
-	ResultsChannel() <-chan *Result
 	Add(*http.Request, int) int
 	Start() Pool
 	Stop()
 }
 
-// The Result struct contains information related to the status of a single
-// replication attempt
-type Result struct {
-	Timestamp  time.Time
-	Status     int
-	DurationMs uint64
-	Err        error
-}
-
 // The Config struct contains the internal configuration for a Pool
 type Config struct {
-	resultsChan chan *Result
 	client      *http.Client
-	workChan    chan *http.Request
+	channel     chan *http.Request
 	concurrency int
+	collect     collector.Collector
 	wg          sync.WaitGroup
 }
 
 // New builds a new Pool
-func New(concurrency, buffer int, timeout time.Duration) *Config {
+func New(concurrency, buffer int, timeout time.Duration, collect collector.Collector) *Config {
 	return &Config{
-		resultsChan: make(chan *Result, buffer),
-		workChan:    make(chan *http.Request, buffer),
+		collect:     collect,
+		channel:     make(chan *http.Request, buffer),
 		client:      &http.Client{Timeout: timeout},
 		concurrency: concurrency,
 	}
@@ -61,7 +54,7 @@ func (pool *Config) Add(request *http.Request, n int) int {
 
 	for i := 0; i < n; i++ {
 		select {
-		case pool.workChan <- request:
+		case pool.channel <- request:
 			pushed++
 		default:
 		}
@@ -73,28 +66,21 @@ func (pool *Config) Add(request *http.Request, n int) int {
 // Stop closes the work channel, causing all workers to stop, it then closes
 // the ResultsChan.
 func (pool *Config) Stop() {
-	close(pool.workChan)
+	close(pool.channel)
+
+	log.Printf("pool stopped, queue: %v\n", len(pool.channel))
 
 	pool.wg.Wait()
-
-	close(pool.resultsChan)
-}
-
-// ResultsChannel returns the channel upon which results will be pushed. If a
-// consumer does not receive from this channel, workers will stall, waiting for
-// the channel to be free.
-func (pool *Config) ResultsChannel() <-chan *Result {
-	return pool.resultsChan
 }
 
 func (pool *Config) work() {
 	pool.wg.Add(1)
 	defer pool.wg.Done()
 
-	for request := range pool.workChan {
+	for request := range pool.channel {
 		start := time.Now()
 		resp, err := pool.client.Do(request)
-		result := &Result{
+		result := &collector.Result{
 			Timestamp:  start,
 			DurationMs: uint64(time.Now().Sub(start).Milliseconds()),
 		}
@@ -107,6 +93,6 @@ func (pool *Config) work() {
 			result.Status = resp.StatusCode
 		}
 
-		pool.resultsChan <- result
+		pool.collect.Add(result)
 	}
 }

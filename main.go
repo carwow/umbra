@@ -1,19 +1,16 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 
+	"github.com/carwow/umbra/collector"
 	"github.com/carwow/umbra/dispatcher"
 	"github.com/carwow/umbra/pool"
-	"github.com/carwow/umbra/reporter"
-	"github.com/go-redis/redis/v8"
 )
 
 const (
@@ -30,55 +27,25 @@ func init() {
 	log.SetFlags(log.Lmsgprefix | log.LstdFlags)
 }
 
-// builds and ping the redis connection
-func initRedis(url string) *redis.Client {
-	options, err := redis.ParseURL(url)
-	if err != nil {
-		log.Fatalf("failed to parse redis URL(%v): %v", defaultRedisURL, err)
-	}
-
-	client := redis.NewClient(options)
-	if err := client.Ping(context.TODO()).Err(); err != nil {
-		log.Fatalf("failed to ping redis %v", err)
-	}
-
-	return client
-}
-
-// builds and pings the redis subscription
-func initPubsub(redisClient *redis.Client, channel string) *redis.PubSub {
-	pubsub := redisClient.Subscribe(context.TODO(), defaultRedisChannel)
-
-	_, err := pubsub.Receive(context.TODO())
-	if err != nil {
-		log.Fatal("error setting up subscription!")
-	}
-
-	return pubsub
-}
-
 // waits for SIGTERM and runs draining and teardown of workers
-func waitForInterrupt(pubsub *redis.PubSub, p pool.Pool, redisClient *redis.Client, wg *sync.WaitGroup) {
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+func waitForInterrupt(d dispatcher.Dispatcher, p pool.Pool, c collector.Collector) {
+	s := make(chan os.Signal)
+	signal.Notify(s, os.Interrupt, syscall.SIGTERM)
 
-	<-c // wait for signal
+	<-s // wait for signal
 
-	log.Println("got SIGTERM")
-	log.Println("unsubscribing...")
-	pubsub.Close()
+	// stop the dispatcher, stopping incoming requests to be replicated
+	d.Stop()
 
-	log.Println("stopping workers...")
+	// stop the work pool, stopping replications
 	p.Stop()
 
-	log.Println("closing redis conn...")
-	redisClient.Close()
-
-	wg.Wait()
+	// stop the collector, there is nothing more to collect
+	c.Stop()
 }
 
-func report(r reporter.Reporter) {
-	report := r.Report()
+func report(r collector.Collector) {
+	report := r.Stats()
 
 	log.Printf(" * Report\n")
 	log.Printf("\tTotal Processed:    %v\n", report.ProcessedTotal)
@@ -98,47 +65,20 @@ func main() {
 
 	flag.Parse()
 
-	client := initRedis(*redisURL)
-	pubsub := initPubsub(client, defaultRedisChannel)
-	channel := pubsub.ChannelSize(*buffer)
-
-	p := pool.New(*workers, *buffer, *timeout).Start()
-	r := reporter.New(p.ResultsChannel())
-	d := dispatcher.New(p, r, channel, *replication)
-
-	var wg sync.WaitGroup
-
-	// Consume Redis Messages
-	go func() {
-		wg.Add(1)
-		defer wg.Done()
-
-		d.Consume()
-
-		log.Println("stopped consuming messages...")
-	}()
-
-	// Consume replication results
-	go func() {
-		wg.Add(1)
-		defer wg.Done()
-
-		r.Consume()
-		log.Println("stopped consuming results...")
-	}()
-
-	// Report stats
-	go func() {
-		for {
-			time.Sleep(5 * time.Second)
-
-			report(r)
-		}
-	}()
+	c := collector.New(*buffer).Start()
+	p := pool.New(*workers, *buffer, *timeout, c).Start()
+	d := dispatcher.New(p, c, *redisURL, defaultRedisChannel, *buffer, *replication).Start()
 
 	log.Println("ready!")
 
-	waitForInterrupt(pubsub, p, client, &wg)
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+			report(c)
+		}
+	}()
+
+	waitForInterrupt(d, p, c)
 
 	os.Exit(0)
 }
