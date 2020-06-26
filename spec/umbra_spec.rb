@@ -14,7 +14,6 @@ RSpec.describe Umbra do
   describe ".publish" do
     let(:request_body) { instance_double(IO, rewind: nil, read: "body") }
     let(:env) { {"rack.input" => request_body} }
-    let(:response) { nil }
     let(:config) { described_class.config }
     let(:publisher) { config.publisher }
     let(:request_selector) { config.request_selector }
@@ -27,24 +26,24 @@ RSpec.describe Umbra do
     end
 
     it "calls the configured publisher" do
-      described_class.publish(env, response)
+      described_class.publish(env)
 
-      expect(publisher).to have_received(:call).with(expected_env, response)
+      expect(publisher).to have_received(:call).with(expected_env)
     end
 
     it "calls the configured request_selector" do
       allow(request_selector).to receive(:call).and_call_original
 
-      described_class.publish(env, response)
+      described_class.publish(env)
 
-      expect(request_selector).to have_received(:call).with(env, response)
+      expect(request_selector).to have_received(:call).with(env)
     end
 
     context "when its an umbra request" do
       let(:env) { {Umbra::HEADER_KEY => Umbra::HEADER_VALUE} }
 
       it "does not call publisher" do
-        described_class.publish(env, response)
+        described_class.publish(env)
 
         expect(publisher).not_to have_received(:call)
       end
@@ -54,7 +53,7 @@ RSpec.describe Umbra do
       it "does not call publisher" do
         config.request_selector = proc { false }
 
-        described_class.publish(env, response)
+        described_class.publish(env)
 
         expect(publisher).not_to have_received(:call)
       end
@@ -66,9 +65,9 @@ RSpec.describe Umbra do
       it "calls the error_handler" do
         allow(publisher).to receive(:call).and_raise(error)
 
-        described_class.publish(env, response)
+        described_class.publish(env)
 
-        expect(error_handler).to have_received(:call).with(error, env, response)
+        expect(error_handler).to have_received(:call).with(error, env)
       end
     end
   end

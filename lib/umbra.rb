@@ -1,20 +1,14 @@
 # frozen_string_literal: true
 
-require "typhoeus"
+require "zeitwerk"
+require "rack"
 require "redis"
-require "multi_json"
 require "concurrent"
 
+Zeitwerk::Loader.for_gem.setup
+
 module Umbra
-  autoload :Config, "umbra/config"
-  autoload :Encoder, "umbra/encoder"
-  autoload :Middleware, "umbra/middleware"
-  autoload :Publisher, "umbra/publisher"
-  autoload :Subscriber, "umbra/subscriber"
-  autoload :RequestBuilder, "umbra/request_builder"
-  autoload :ShadowRequester, "umbra/shadow_requester"
-  autoload :SynchronousPublisher, "umbra/synchronous_publisher"
-  autoload :Version, "umbra/version"
+  autoload :Pb, "umbra/pb/umbra_pb"
 
   CHANNEL = "umbra_channel"
   HEADER_KEY = "HTTP_X_UMBRA_REQUEST"
@@ -32,16 +26,17 @@ module Umbra
       test_redis_connection!
     end
 
-    def publish(env, response)
+    def publish(env)
       return if umbra_request?(env)
+
       return unless @config
-      return unless @config.request_selector.call(env, response)
+      return unless @config.request_selector.call(env)
 
       env["umbra.request_body"] = request_body(env)
 
-      @config.publisher.call(env, response)
+      @config.publisher.call(env)
     rescue => e
-      @config.error_handler.call(e, env, response)
+      @config.error_handler.call(e, env)
     end
 
     def redis

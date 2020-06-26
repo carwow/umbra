@@ -10,7 +10,11 @@ RSpec.describe Umbra::Middleware do
     it "calls Umbra.publish with expected params" do
       instance.call("env")
 
-      expect(Umbra).to have_received(:publish).with("env", [200, {"User-Agent" => "hello"}, ["a body"]])
+      expect(Umbra).to have_received(:publish).with("env")
+    end
+
+    it "does not alter rack response" do
+      expect(instance.call("env")).to eq([200, {"User-Agent" => "hello"}, ["a body"]])
     end
   end
 end
