@@ -1,15 +1,13 @@
-/.bundle/
-/.yardoc
-/_yardoc/
-/coverage/
-/doc/
-/pkg/
-/spec/reports/
+/ruby/.bundle/
+/ruby/.yardoc
+/ruby/_yardoc/
+/ruby/coverage/
+/ruby/doc/
+/ruby/pkg/
+/ruby/spec/reports/
+/ruby/.rspec_status
+/ruby/*.gem
+
 /tmp/
-
-# rspec failure tracking
-.rspec_status
-*.gem
-
 /exe/
-umbra
+/umbra

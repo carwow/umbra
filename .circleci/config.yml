@@ -11,11 +11,12 @@ version: 2
 
 jobs:
   bundle:
-    working_directory: ~/umbra
+    working_directory: ~/umbra/ruby
     docker:
       - *ruby
     steps:
-      - checkout
+      - checkout:
+          path: ~/umbra
       - restore_cache:
           keys:
             - bundle-{{ checksum "Gemfile.lock" }}
@@ -25,13 +26,13 @@ jobs:
           bundle check || bundle install --jobs=4 --retry=3
       - save_cache:
           key: bundle-{{ checksum "Gemfile.lock" }}
-          paths: [~/umbra/vendor/bundle]
+          paths: [~/umbra/ruby/vendor/bundle]
       - persist_to_workspace:
           root: '~'
           paths: [umbra]
 
   standard:
-    working_directory: ~/umbra
+    working_directory: ~/umbra/ruby
     docker:
       - *ruby
     steps:
@@ -39,8 +40,8 @@ jobs:
           at: '~'
       - run: bundle exec rake standard
 
-  tests:
-    working_directory: ~/umbra
+  rubytests:
+    working_directory: ~/umbra/ruby
     docker:
       - *ruby
       - *redis
@@ -72,7 +73,7 @@ workflows:
       - bundle
       - standard:
           requires: [bundle]
-      - tests:
+      - rubytests:
           requires: [bundle]
       - gotest
 
