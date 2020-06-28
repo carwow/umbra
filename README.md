@@ -83,11 +83,11 @@ end
 
 ## Shadower
 
-You can build the executable or download the latest version from the latest releases page.
+Download the latest version from the latest releases page.
 
-To build from source you can run `go build .`
+Or `go get github.com/carwow/umbra`
 
-The following flags are available:
+The following flags are available (run `umbra -help`):
 
     -buffer int
         request buffer size (default 25)
