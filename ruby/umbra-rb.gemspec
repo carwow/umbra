@@ -36,7 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "puma"
 
   spec.add_dependency "concurrent-ruby", "~> 1.1"
-  spec.add_dependency "oj", "~> 3.9"
   spec.add_dependency "redis", "~> 4.1"
   spec.add_dependency "google-protobuf", "~> 3"
   spec.add_dependency "rack", "~> 2"
