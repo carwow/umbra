@@ -16,7 +16,7 @@ GEM
     coderay (1.1.2)
     concurrent-ruby (1.1.6)
     diff-lcs (1.3)
-    google-protobuf (3.12.2-universal-darwin)
+    google-protobuf (3.12.4)
     method_source (1.0.0)
     nio4r (2.5.2)
     oj (3.10.6)
