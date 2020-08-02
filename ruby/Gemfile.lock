@@ -67,7 +67,7 @@ GEM
       rubocop (~> 0.85.0)
       rubocop-performance (~> 1.6.0)
     unicode-display_width (1.7.0)
-    zeitwerk (2.3.0)
+    zeitwerk (2.4.0)
 
 PLATFORMS
   ruby
