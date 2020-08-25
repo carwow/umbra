@@ -9,7 +9,7 @@ module Umbra
         encoder: Encoder,
         error_handler: SuppressErrorHandler,
         redis_options: {},
-        logger: Logger.new(STDOUT),
+        logger: Logger.new($stdout),
         &block
       )
     end
