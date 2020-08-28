@@ -61,7 +61,7 @@ GEM
     rubocop-performance (1.7.1)
       rubocop (>= 0.82.0)
     ruby-progressbar (1.10.1)
-    standard (0.5.1)
+    standard (0.5.2)
       rubocop (~> 0.89.1)
       rubocop-performance (~> 1.7.1)
     unicode-display_width (1.7.0)
