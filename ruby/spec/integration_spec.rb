@@ -3,28 +3,27 @@
 RSpec.describe "Integration" do
   include Rack::Test::Methods
 
-  class FakeRedis
-    attr_reader :messages
-
-    def initialize
-      @messages = []
-    end
-
-    def ping
-    end
-
-    def publish(channel, message)
-      @messages << [channel, message]
-    end
+  before do
+    allow(Umbra).to receive(:redis).and_return(redis)
   end
 
-  def app
-    Rack::Builder.parse_file("config.ru").first
+  let(:app) { Rack::Builder.parse_file("config.ru").first }
+  let(:redis) do
+    Class.new {
+      attr_reader :messages
+
+      def initialize
+        @messages = []
+      end
+
+      def ping
+      end
+
+      def publish(channel, message)
+        @messages << [channel, message]
+      end
+    }.new
   end
-
-  before { allow(Umbra).to receive(:redis).and_return(redis) }
-
-  let(:redis) { FakeRedis.new }
 
   it "returns OK" do
     get "/"
