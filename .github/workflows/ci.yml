@@ -43,10 +43,10 @@ jobs:
 
   ruby:
     defaults:
+      continue-on-error: ${{ matrix.experimental }}
       run:
         working-directory: ./ruby
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental }}
     services:
       redis:
         image: redis
@@ -76,3 +76,5 @@ jobs:
       - run: bundle install
       - run: bundle exec rake standard
       - run: bundle exec rspec --format progress
+      - run: "true"
+        if: ${{ matrix.experimental }}
