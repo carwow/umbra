@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
 
   spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["github_repo"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
 
   spec.require_paths = ["lib"]
