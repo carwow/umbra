@@ -26,7 +26,7 @@ RSpec.describe Umbra::Encoder do
     end
 
     it "returns the encoded protobuf string" do
-      expect(result).to eq(expected_message.to_proto)
+      expect(Umbra::Pb::Message.decode(result)).to eq(expected_message)
     end
   end
 end
