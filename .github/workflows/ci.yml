@@ -7,6 +7,20 @@ on:
     branches: [ master ]
 
 jobs:
+  protoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: arduino/setup-protoc@v1
+        with:
+          version: '3.x'
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+      - run: go install google.golang.org/protobuf/cmd/protoc-gen-go
+      - run: protoc -I=. --go_out=pb --go_opt=paths=source_relative --ruby_out=ruby/lib/umbra/pb ./umbra.proto
+      - run: git add . && git diff --exit-code
+
   golang:
     services:
       redis:
