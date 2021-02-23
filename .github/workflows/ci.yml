@@ -19,7 +19,7 @@ jobs:
           go-version: ^1.16
       - run: go install google.golang.org/protobuf/cmd/protoc-gen-go
       - run: protoc -I=. --go_out=pb --go_opt=paths=source_relative --ruby_out=ruby/lib/umbra/pb ./umbra.proto
-      - run: git add . && git diff --exit-code
+      - run: git add . && git diff --staged --exit-code
 
   golang:
     services:
