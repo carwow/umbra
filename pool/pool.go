@@ -40,6 +40,7 @@ func New(concurrency, buffer int, timeout time.Duration, collect collector.Colle
 // Start begins the background workers for the pool
 func (pool *Config) Start() Pool {
 	for i := 0; i < pool.concurrency; i++ {
+		pool.wg.Add(1)
 		go pool.work()
 	}
 
@@ -74,7 +75,6 @@ func (pool *Config) Stop() {
 }
 
 func (pool *Config) work() {
-	pool.wg.Add(1)
 	defer pool.wg.Done()
 
 	for request := range pool.channel {
