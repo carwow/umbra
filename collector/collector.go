@@ -3,6 +3,7 @@ package collector
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"sync"
 	"time"
 )
@@ -28,12 +29,13 @@ type Result struct {
 
 // Stats contains stats around the current reporting run
 type Stats struct {
-	ProcessedTotal   uint64
-	ReplicatedTotal  uint64
-	ErroredTotal     uint64
-	ServerErrorTotal uint64
-	ServerOKTotal    uint64
-	TotalDurationMs  uint64
+	ProcessedTotal    uint64
+	ReplicatedTotal   uint64
+	ErroredTotal      uint64
+	TimeoutErrorTotal uint64
+	ServerErrorTotal  uint64
+	ServerOKTotal     uint64
+	TotalDurationMs   uint64
 }
 
 // Config contains the internal configuration for a worker
@@ -62,6 +64,9 @@ func (c *Config) Start() Collector {
 
 			if result.Err != nil {
 				c.stats.ErroredTotal++
+				if result.Err.(*url.Error).Timeout() {
+					c.stats.TimeoutErrorTotal++
+				}
 			} else if result.Status < 500 {
 				c.stats.ServerOKTotal++
 				c.stats.TotalDurationMs = c.stats.TotalDurationMs + result.DurationMs

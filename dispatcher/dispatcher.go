@@ -46,6 +46,8 @@ func ToHTTPRequest(msg *pb.Message) (*http.Request, error) {
 		r.Header.Add(k, v)
 	}
 
+	r.Header.Add("Cache-Control", "no-cache")
+
 	return r, nil
 }
 

@@ -51,6 +51,7 @@ func report(r collector.Collector) {
 	log.Printf("\tTotal Processed:    %v\n", report.ProcessedTotal)
 	log.Printf("\tTotal Replicated:   %v\n", report.ReplicatedTotal)
 	log.Printf("\tTotal Errored:      %v\n", report.ErroredTotal)
+	log.Printf("\tTotal Timeout:      %v\n", report.TimeoutErrorTotal)
 	log.Printf("\tTotal Server Error: %v\n", report.ServerErrorTotal)
 	log.Printf("\tTotal Server OK:    %v\n", report.ServerOKTotal)
 	log.Printf("\tTotal DurationMs:   %v\n", report.TotalDurationMs)
