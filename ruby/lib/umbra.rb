@@ -15,7 +15,7 @@ module Umbra
   HEADER_VALUE = "true"
 
   RequestSelector = proc { true }
-  SuppressErrorHandler = proc { nil }
+  SuppressErrorHandler = proc {}
 
   class << self
     attr_reader :config
