@@ -39,6 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "concurrent-ruby", "~> 1.1"
   spec.add_dependency "redis", "~> 4.1"
   spec.add_dependency "google-protobuf", "~> 3"
-  spec.add_dependency "rack", "~> 2"
+  spec.add_dependency "rack", ">= 2", "< 4"
   spec.add_dependency "zeitwerk", "~> 2"
 end
