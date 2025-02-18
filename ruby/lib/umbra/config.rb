@@ -1,3 +1,5 @@
+require 'logger'
+
 module Umbra
   class Config
     attr_accessor :publisher, :request_selector, :encoder, :error_handler, :redis_options, :logger

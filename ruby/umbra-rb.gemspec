@@ -40,5 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "redis", "~> 4.1"
   spec.add_dependency "google-protobuf", "~> 3"
   spec.add_dependency "rack", ">= 2", "< 4"
+  spec.add_dependency "rackup", ">=2", "< 3"
   spec.add_dependency "zeitwerk", "~> 2"
 end
