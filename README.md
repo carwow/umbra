@@ -41,13 +41,13 @@ A minimal rack application using `umbra` would look like this:
 ```ruby
 # /config.ru
 require 'rack'
-require 'rack/lobster'
+require 'rackup/lobster'
 require 'umbra'
 
 Umbra.configure
 
 use Umbra::Middleware
-run Rack::Lobster.new
+run Rackup::Lobster.new
 
 ```
 

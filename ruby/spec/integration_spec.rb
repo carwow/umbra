@@ -7,7 +7,7 @@ RSpec.describe "Integration" do
     allow(Umbra).to receive(:redis).and_return(redis)
   end
 
-  let(:app) { Rack::Builder.parse_file("config.ru").first }
+  let(:app) { Rack::Builder.parse_file("config.ru") }
   let(:redis) do
     Class.new {
       attr_reader :messages
