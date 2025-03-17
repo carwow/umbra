@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "rackup", ">=2", "< 3"
   spec.add_development_dependency "rack-test"
   spec.add_development_dependency "puma"
 
@@ -40,6 +41,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "redis", "~> 4.1"
   spec.add_dependency "google-protobuf", "~> 3"
   spec.add_dependency "rack", ">= 2", "< 4"
-  spec.add_dependency "rackup", ">=2", "< 3"
   spec.add_dependency "zeitwerk", "~> 2"
 end
