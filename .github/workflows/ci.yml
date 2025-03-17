@@ -10,9 +10,9 @@ jobs:
   protoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: arduino/setup-protoc@v1
+      - uses: arduino/setup-protoc@v3
         with:
-          version: '3.x'
+          version: '29.3'
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
