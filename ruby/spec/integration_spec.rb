@@ -39,7 +39,7 @@ RSpec.describe "Integration" do
     expect(redis.messages.count).to eq(1)
   end
 
-  fit "publishes the expected protobuf message" do
+  it "publishes the expected protobuf message" do
     post "/", "request-body"
 
     sleep(0.1)
