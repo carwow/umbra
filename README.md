@@ -40,15 +40,14 @@ A minimal rack application using `umbra` would look like this:
 
 ```ruby
 # /config.ru
-require 'rack'
-require 'rack/lobster'
-require 'umbra'
+require "rack"
+require "rackup/lobster"
+require "umbra"
 
 Umbra.configure
 
 use Umbra::Middleware
-run Rack::Lobster.new
-
+run Rackup::Lobster.new
 ```
 
 If using Rails you can achieve the same via an initializer:

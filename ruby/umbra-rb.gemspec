@@ -28,17 +28,16 @@ Gem::Specification.new do |spec|
       .reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
 
-  spec.add_development_dependency "bundler", "~> 2.0"
-  spec.add_development_dependency "standard"
-  spec.add_development_dependency "pry"
-  spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "rack-test"
-  spec.add_development_dependency "puma"
+  spec.add_development_dependency "bundler", "~>2.6"
+  spec.add_development_dependency "rack-test", "~>2.2"
+  spec.add_development_dependency "rake", "~>13.2"
+  spec.add_development_dependency "rspec", "~>3"
+  spec.add_development_dependency "standard", "~>1.49"
 
-  spec.add_dependency "concurrent-ruby", "~> 1.1"
-  spec.add_dependency "redis", "~> 4.1"
-  spec.add_dependency "google-protobuf", "~> 3"
-  spec.add_dependency "rack", ">= 2", "< 4"
-  spec.add_dependency "zeitwerk", "~> 2"
+  spec.add_dependency "concurrent-ruby", "~>1.3"
+  spec.add_dependency "google-protobuf", "~>4.30"
+  spec.add_dependency "rack", "~>3.1"
+  spec.add_dependency "rackup", "~>2.2"
+  spec.add_dependency "redis", "~>5.4"
+  spec.add_dependency "zeitwerk", "~>2.7"
 end

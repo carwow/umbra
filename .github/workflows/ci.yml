@@ -10,13 +10,13 @@ jobs:
   protoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: arduino/setup-protoc@v1
+      - uses: arduino/setup-protoc@v3
         with:
-          version: '3.x'
+          version: 29.3
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
-          go-version: ^1.16
+          go-version: ^1.22
       - run: go install google.golang.org/protobuf/cmd/protoc-gen-go
       - run: protoc -I=. --go_out=pb --go_opt=paths=source_relative --ruby_out=ruby/lib/umbra/pb ./umbra.proto
       - run: git add . && git diff --staged --exit-code
@@ -35,25 +35,13 @@ jobs:
     name: Go
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
+    - uses: actions/setup-go@v2
       with:
-        go-version: ^1.13
-      id: go
-
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Get dependencies
-      run: |
-        go get -v -t -d ./...
-        go get -u golang.org/x/lint/golint
-
-    - name: Build
-      run: |
-        golint -set_exit_status ./...
-        go build -v .
-        go test -v ./...
+        go-version: ^1.22
+    - uses: actions/checkout@v2
+    - run: go mod tidy -v && git diff --exit-code go.mod go.sum
+    - run: go build -v .
+    - run: go test -v ./...
 
   ruby:
     defaults:
@@ -74,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '2.6', '2.7', '3.0' ]
+        ruby: [ '3.2', '3.4' ]
         experimental: [ false ]
     name: Ruby ${{ matrix.ruby }}
     steps:
@@ -82,7 +70,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - run: gem install bundler:2.1.4
+      - run: gem install bundler
       - run: bundle install
-      - run: bundle exec rake standard
+      - run: bundle exec standardrb
       - run: bundle exec rspec --format progress
