@@ -4,6 +4,7 @@ require "zeitwerk"
 require "rack"
 require "redis"
 require "concurrent"
+require "logger"
 
 Zeitwerk::Loader.for_gem.setup
 
@@ -59,6 +60,8 @@ module Umbra
     private
 
     def request_body(env)
+      return nil unless env.key? "rack.input"
+
       io = env.fetch("rack.input")
       io.rewind
       body = io.read

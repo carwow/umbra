@@ -3,11 +3,7 @@
 RSpec.describe "Integration" do
   include Rack::Test::Methods
 
-  before do
-    allow(Umbra).to receive(:redis).and_return(redis)
-  end
-
-  let(:app) { Rack::Builder.parse_file("config.ru").first }
+  let!(:app) { Rack::Builder.parse_file("config.ru") }
   let(:redis) do
     Class.new {
       attr_reader :messages
@@ -25,6 +21,12 @@ RSpec.describe "Integration" do
     }.new
   end
 
+  before do
+    Umbra.config.error_handler = ->(error, env) { raise error }
+
+    allow(Umbra).to receive(:redis).and_return(redis)
+  end
+
   it "returns OK" do
     get "/"
 
@@ -39,7 +41,7 @@ RSpec.describe "Integration" do
     expect(redis.messages.count).to eq(1)
   end
 
-  fit "publishes the expected protobuf message" do
+  it "publishes the expected protobuf message" do
     post "/", "request-body"
 
     sleep(0.1)

@@ -6,7 +6,6 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "bundler/setup"
 require "umbra"
 require "rack/test"
-require "pry"
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
