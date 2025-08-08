@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.7
 )
 
 require (
