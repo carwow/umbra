@@ -1,10 +1,10 @@
 module github.com/carwow/umbra
 
-go 1.22
+go 1.23
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.9
 )
 
 require (
